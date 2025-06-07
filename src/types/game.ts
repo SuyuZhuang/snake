@@ -22,7 +22,7 @@ export interface Trigram {
 export interface GameState {
   snake: SnakeSegment[];
   direction: Direction;
-  currentSymbol: Trigram | null;
+  symbols: (Trigram & { position: Position })[];
   score: number;
   gameRunning: boolean;
   gameOver: boolean;

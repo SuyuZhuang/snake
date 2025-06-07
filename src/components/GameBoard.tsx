@@ -72,19 +72,19 @@ const GameBoard: React.FC<GameBoardProps> = ({
           </g>
         ))}
 
-        {/* Current symbol */}
-        {gameState.currentSymbol && gameState.currentSymbol.position && (
-          <g>
+        {/* Symbols */}
+        {gameState.symbols.map((symbol, index) => (
+          <g key={index}>
             <circle
-              cx={gameState.currentSymbol.position.x * cellSize + cellSize / 2}
-              cy={gameState.currentSymbol.position.y * cellSize + cellSize / 2}
+              cx={symbol.position.x * cellSize + cellSize / 2}
+              cy={symbol.position.y * cellSize + cellSize / 2}
               r={cellSize / 2 - 2}
               fill="#ef4444"
               className="animate-pulse drop-shadow-lg"
             />
             <text
-              x={gameState.currentSymbol.position.x * cellSize + cellSize / 2}
-              y={gameState.currentSymbol.position.y * cellSize + cellSize / 2}
+              x={symbol.position.x * cellSize + cellSize / 2}
+              y={symbol.position.y * cellSize + cellSize / 2}
               textAnchor="middle"
               dominantBaseline="middle"
               fontSize="12"
@@ -92,10 +92,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
               fontWeight="bold"
               className="select-none"
             >
-              {gameState.currentSymbol.symbol}
+              {symbol.symbol}
             </text>
           </g>
-        )}
+        ))}
       </svg>
 
       {/* Game Over Overlay */}

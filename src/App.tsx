@@ -59,7 +59,7 @@ function App() {
             
             <EducationPanel
               currentTrigram={gameState.snake[0]?.trigram || null}
-              targetSymbol={gameState.currentSymbol?.symbol || null}
+              targetSymbols={gameState.symbols.map(s => s.symbol)}
             />
           </div>
 
@@ -94,12 +94,12 @@ function App() {
                     {gameState.snake[0]?.trigram || 'None'}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span>目标符号 Target Symbol:</span>
+                {/* <div className="flex justify-between">
+                  <span>目标符号 Target Symbols:</span>
                   <span className="font-semibold text-red-400 text-lg">
-                    {gameState.currentSymbol?.symbol || 'None'}
+                    {gameState.symbols.map(s => s.symbol).join(' ')}
                   </span>
-                </div>
+                </div> */}
               </div>
             </div>
 

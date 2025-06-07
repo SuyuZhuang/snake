@@ -4,12 +4,12 @@ import { findTrigramByName } from '../utils/iching';
 
 interface EducationPanelProps {
   currentTrigram: string | null;
-  targetSymbol: string | null;
+  targetSymbols: string[];
 }
 
 const EducationPanel: React.FC<EducationPanelProps> = ({
   currentTrigram,
-  targetSymbol
+  targetSymbols
 }) => {
   const trigram = currentTrigram ? findTrigramByName(currentTrigram) : null;
 
@@ -34,7 +34,6 @@ const EducationPanel: React.FC<EducationPanelProps> = ({
               <span className="ml-2 text-amber-700">{trigram.element}</span>
             </div>
             
-            
             <div>
               <span className="font-semibold text-amber-800">助记 · Memory:</span>
               <p className="ml-2 text-amber-700 text-sm leading-relaxed">
@@ -42,6 +41,15 @@ const EducationPanel: React.FC<EducationPanelProps> = ({
               </p>
             </div>
           </div>
+
+          {/* <div className="text-center mt-4">
+            <div className="font-semibold text-amber-800 mb-2">目标符号 · Target Symbols:</div>
+            <div className="text-2xl text-red-500 space-x-2">
+              {targetSymbols.map((symbol, index) => (
+                <span key={index}>{symbol}</span>
+              ))}
+            </div>
+          </div> */}
         </div>
       ) : (
         <div className="text-center text-amber-700">
@@ -54,8 +62,6 @@ const EducationPanel: React.FC<EducationPanelProps> = ({
           </p>
         </div>
       )}
-      
-    
     </div>
   );
 };
