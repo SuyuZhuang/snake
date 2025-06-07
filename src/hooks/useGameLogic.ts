@@ -8,23 +8,21 @@ const INITIAL_SPEED = 300;
 
 export const useGameLogic = () => {
   const [gameState, setGameState] = useState<GameState>(() => {
-    const headTrigram = getRandomTrigram();
+ 
     const initialSnake: SnakeSegment[] = [];
-      
+
     for (let i = 0; i < INITIAL_SNAKE_LENGTH; i++) {
       initialSnake.push({
         position: { x: 10 - i, y: 10 }, 
-        trigram: i === 0
-          ? headTrigram.name  
-          : getRandomTrigram().name
+        trigram: getRandomTrigram().name
       });
     }
-   
+    console.log(initialSnake);
 
     return {
       snake: initialSnake,
       direction: 'RIGHT',
-      currentSymbol: initialSnake[0].trigram,
+      currentSymbol: getRandomTrigram(),
       score: 0,
       gameRunning: false,
       gameOver: false,
