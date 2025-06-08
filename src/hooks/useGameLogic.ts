@@ -5,7 +5,7 @@ import { getRandomTrigram, initialAchievements, findTrigramByName } from '../uti
 const BOARD_SIZE = 20;
 const INITIAL_SNAKE_LENGTH = 3;
 const INITIAL_SPEED = 300;
-const FOOD_COUNT = 3;  // Number of foods to show at once
+const FOOD_COUNT = 8;  // Number of foods to show at once
 
 export const useGameLogic = () => {
   // Define generateRandomPosition first without useCallback
@@ -34,10 +34,18 @@ export const useGameLogic = () => {
     const initialSnake: SnakeSegment[] = [];
     const initialSymbols: (Trigram & { position: Position })[] = [];
 
+    // Initialize snake with different random trigrams for each segment
+    const usedTrigrams = new Set(); // Track used trigrams to ensure variety
     for (let i = 0; i < INITIAL_SNAKE_LENGTH; i++) {
+      let trigram;
+      do {
+        trigram = getRandomTrigram();
+      } while (usedTrigrams.has(trigram.name) && usedTrigrams.size < 8);
+      usedTrigrams.add(trigram.name);
+      
       initialSnake.push({
         position: { x: 10 - i, y: 10 }, 
-        trigram: getRandomTrigram().name
+        trigram: trigram.name
       });
     }
 
@@ -112,70 +120,53 @@ export const useGameLogic = () => {
         return { ...prev, gameOver: true, gameRunning: false };
       }
 
-      const newSnake = [...prev.snake];
-      newSnake.unshift({
-        position: newHead,
-        trigram: head.trigram
-      });
-
-      // Check if snake head matches any symbol
+      // 新头部segment，内容和位置都正确
+      const newHeadSegment: SnakeSegment = { position: newHead, trigram: prev.snake[0].trigram };
+      let newSnake: SnakeSegment[];
+      // 检查是否吃到食物
       const matchedSymbolIndex = prev.symbols.findIndex(symbol => 
-        newHead.x === symbol.position.x && newHead.y === symbol.position.y
+        newHeadSegment.position.x === symbol.position.x && newHeadSegment.position.y === symbol.position.y
       );
-
       if (matchedSymbolIndex !== -1) {
         const matchedSymbol = prev.symbols[matchedSymbolIndex];
-        const headTrigram = findTrigramByName(head.trigram);
-        const isCorrect = headTrigram?.symbol === matchedSymbol.symbol;
-        
+        const isCorrect = findTrigramByName(prev.snake[0].trigram)?.symbol === matchedSymbol.symbol;
         let newScore = prev.score;
-        
         if (isCorrect) {
           newScore += 3;
           setStreak(s => s + 1);
-          setMasteredTrigrams(m => new Set(m).add(head.trigram));
+          setMasteredTrigrams(m => new Set(m).add(prev.snake[0].trigram));
+          // 吃对了，变长
+          newSnake = [newHeadSegment, ...prev.snake];
         } else {
           newScore -= 3;
           setStreak(0);
-          if (newSnake.length > 1) {
-            newSnake.pop();
-          }
+          // 吃错了，长度不变
+          newSnake = [newHeadSegment, ...prev.snake.slice(0, -1)];
         }
-
-        // Add new segment with random trigram if correct
-        if (isCorrect) {
-          newSnake[newSnake.length - 1] = {
-            ...newSnake[newSnake.length - 1],
-            trigram: getRandomTrigram().name
-          };
-        }
-
-                  // Replace the eaten symbol with a new one
-          const newSymbols = [...prev.symbols];
-          const pos = generateRandomPosition(
-            prev.snake,
-            prev.symbols.map(s => s.position)
-          );
-          newSymbols[matchedSymbolIndex] = {
-            ...getRandomTrigram(),
-            position: pos
-          };
-
+        // 替换被吃掉的symbol
+        const newSymbols = [...prev.symbols];
+        const pos = generateRandomPosition(
+          newSnake,
+          newSymbols.map(s => s.position)
+        );
+        newSymbols[matchedSymbolIndex] = {
+          ...getRandomTrigram(),
+          position: pos
+        };
         return {
           ...prev,
           snake: newSnake,
           score: Math.max(0, newScore),
           symbols: newSymbols
         };
+      } else {
+        // 没吃到食物，长度不变
+        newSnake = [newHeadSegment, ...prev.snake.slice(0, -1)];
+        return {
+          ...prev,
+          snake: newSnake
+        };
       }
-
-      // Remove tail if no food eaten
-      newSnake.pop();
-
-      return {
-        ...prev,
-        snake: newSnake
-      };
     });
   }, [checkCollision, generateRandomPosition]);
 
@@ -197,28 +188,28 @@ export const useGameLogic = () => {
     });
   }, []);
 
-      const startGame = useCallback(() => {
-      setGameState(prev => {
-        const newSymbols = [];
-        for (let i = 0; i < FOOD_COUNT; i++) {
-          const pos = generateRandomPosition(
-            prev.snake,
-            newSymbols.map(s => s.position)
-          );
-          newSymbols.push({
-            ...getRandomTrigram(),
-            position: pos
-          });
-        }
-        
-        return {
-          ...prev,
-          gameRunning: true,
-          gameOver: false,
-          symbols: newSymbols
-        };
-      });
-    }, []);
+  const startGame = useCallback(() => {
+    setGameState(prev => {
+      const newSymbols = [];
+      for (let i = 0; i < FOOD_COUNT; i++) {
+        const pos = generateRandomPosition(
+          prev.snake,
+          newSymbols.map(s => s.position)
+        );
+        newSymbols.push({
+          ...getRandomTrigram(),
+          position: pos
+        });
+      }
+      
+      return {
+        ...prev,
+        gameRunning: true,
+        gameOver: false,
+        symbols: newSymbols
+      };
+    });
+  }, []);
 
   const pauseGame = useCallback(() => {
     setGameState(prev => ({ ...prev, gameRunning: !prev.gameRunning }));
@@ -226,24 +217,32 @@ export const useGameLogic = () => {
 
   const resetGame = useCallback(() => {
     const initialSnake: SnakeSegment[] = [];
+    // Initialize snake with different random trigrams for each segment
+    const usedTrigrams = new Set();
     for (let i = 0; i < INITIAL_SNAKE_LENGTH; i++) {
+      let trigram;
+      do {
+        trigram = getRandomTrigram();
+      } while (usedTrigrams.has(trigram.name) && usedTrigrams.size < 8);
+      usedTrigrams.add(trigram.name);
+
       initialSnake.push({
         position: { x: 10 - i, y: 10 },
-        trigram: getRandomTrigram().name
+        trigram: trigram.name
       });
     }
 
-          const initialSymbols = [];
-      for (let i = 0; i < FOOD_COUNT; i++) {
-        const pos = generateRandomPosition(
-          initialSnake,
-          initialSymbols.map(s => s.position)
-        );
-        initialSymbols.push({
-          ...getRandomTrigram(),
-          position: pos
-        });
-      }
+    const initialSymbols = [];
+    for (let i = 0; i < FOOD_COUNT; i++) {
+      const pos = generateRandomPosition(
+        initialSnake,
+        initialSymbols.map(s => s.position)
+      );
+      initialSymbols.push({
+        ...getRandomTrigram(),
+        position: pos
+      });
+    }
 
     setGameState({
       snake: initialSnake,
