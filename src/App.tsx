@@ -92,24 +92,7 @@ function App() {
 
           {/* Right Column - Game Stats and Tips */}
           <div className="space-y-6">
-            {/* Current Status */}
-            <div className="bg-gradient-to-r from-purple-800 to-purple-700 rounded-lg p-6 shadow-xl">
-              <h3 className="text-lg font-bold mb-4 text-center">游戏状态 · Game Status</h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span>当前头部 Current Head:</span>
-                  <span className="font-semibold text-yellow-400">
-                    {gameState.snake[0]?.trigram || 'None'}
-                  </span>
-                </div>
-                {/* <div className="flex justify-between">
-                  <span>目标符号 Target Symbols:</span>
-                  <span className="font-semibold text-red-400 text-lg">
-                    {gameState.symbols.map(s => s.symbol).join(' ')}
-                  </span>
-                </div> */}
-              </div>
-            </div>
+  
 
             {/* Tips */}
             <div className="bg-gradient-to-r from-green-800 to-emerald-700 rounded-lg p-6 shadow-xl">
@@ -119,13 +102,17 @@ function App() {
                   <span className="text-yellow-400 font-bold">•</span>
                   <span>学习符号，提升辨别准确性</span>
                 </li>
-                 <li className="flex items-start gap-2">
+                <li className="flex items-start gap-2">
                   <span className="text-yellow-400 font-bold">•</span>
-                  <span>点击说明按钮，了解更多</span>
+                  <span>使用上下左右或WASD键控制方向</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-yellow-400 font-bold">•</span>
                   <span>规划路线，避免和墙体或自己碰撞</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-yellow-400 font-bold">•</span>
+                  <span>点击说明按钮，了解更多</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-yellow-400 font-bold"> </span>
@@ -135,13 +122,17 @@ function App() {
                   <span className="text-yellow-400 font-bold">•</span>
                   <span>Study the trigram symbols and their meanings to improve accuracy</span>
                 </li>
-                 <li className="flex items-start gap-2">
+                <li className="flex items-start gap-2">
                   <span className="text-yellow-400 font-bold">•</span>
-                  <span>Plan your path to avoid walls and self-collision</span>
+                  <span>Use the up, down, left, right or WASD keys to control the direction</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-yellow-400 font-bold">•</span>
                   <span>Take time to read the Instruction panel</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-yellow-400 font-bold">•</span>
+                  <span>Plan your path to avoid walls and self-collision</span>
                 </li>
               </ul>
             </div>
