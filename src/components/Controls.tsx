@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, RotateCcw, Info } from 'lucide-react';
+import { Play, Pause, RotateCcw, Info, ZoomIn, ZoomOut } from 'lucide-react';
 
 interface ControlsProps {
   gameRunning: boolean;
@@ -8,6 +8,8 @@ interface ControlsProps {
   onPause: () => void;
   onReset: () => void;
   onShowInstructions: () => void;
+  isZoomed: boolean;
+  onToggleZoom: () => void;
 }
 
 const Controls: React.FC<ControlsProps> = ({
@@ -16,11 +18,13 @@ const Controls: React.FC<ControlsProps> = ({
   onStart,
   onPause,
   onReset,
-  onShowInstructions
+  onShowInstructions,
+  isZoomed,
+  onToggleZoom
 }) => {
   return (
     <div className="flex flex-wrap gap-3 justify-center">
-      {!gameRunning && !gameOver ? (
+      {/* {!gameRunning && !gameOver ? (
         <button
           onClick={onStart}
           className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors shadow-lg"
@@ -36,15 +40,15 @@ const Controls: React.FC<ControlsProps> = ({
           <Pause size={20} />
           暂停 · Pause
         </button>
-      ) : null}
+      ) : null} */}
       
-      <button
+      {/* <button
         onClick={onReset}
         className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors shadow-lg"
       >
         <RotateCcw size={20} />
         重置 · Reset
-      </button>
+      </button> */}
       
       <button
         onClick={onShowInstructions}
@@ -52,6 +56,14 @@ const Controls: React.FC<ControlsProps> = ({
       >
         <Info size={20} />
         说明 · Instructions
+      </button>
+
+      <button
+        onClick={onToggleZoom}
+        className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors shadow-lg"
+      >
+        {isZoomed ? <ZoomOut size={20} /> : <ZoomIn size={20} />}
+        {isZoomed ? '缩小 · Zoom Out' : '放大 · Zoom In'}
       </button>
     </div>
   );

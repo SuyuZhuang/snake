@@ -327,43 +327,46 @@ export const useGameLogic = () => {
   // Keyboard controls
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (!gameState.gameRunning) return;
-      
       switch (e.key) {
         case 'ArrowUp':
         case 'w':
         case 'W':
           e.preventDefault();
-          changeDirection('UP');
+          if (gameState.gameRunning) changeDirection('UP');
           break;
         case 'ArrowDown':
         case 's':
         case 'S':
           e.preventDefault();
-          changeDirection('DOWN');
+          if (gameState.gameRunning) changeDirection('DOWN');
           break;
         case 'ArrowLeft':
         case 'a':
         case 'A':
           e.preventDefault();
-          changeDirection('LEFT');
+          if (gameState.gameRunning) changeDirection('LEFT');
           break;
         case 'ArrowRight':
         case 'd':
         case 'D':
           e.preventDefault();
-          changeDirection('RIGHT');
+          if (gameState.gameRunning) changeDirection('RIGHT');
           break;
         case ' ':
           e.preventDefault();
-          pauseGame();
+          if (gameState.gameOver) {
+            resetGame();
+            startGame();
+          } else {
+            pauseGame();
+          }
           break;
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [gameState.gameRunning, changeDirection, pauseGame]);
+  }, [gameState.gameRunning, gameState.gameOver, changeDirection, pauseGame, resetGame, startGame]);
 
   return {
     gameState,

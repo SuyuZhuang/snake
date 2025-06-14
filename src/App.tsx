@@ -20,6 +20,7 @@ function App() {
   } = useGameLogic();
 
   const [showInstructions, setShowInstructions] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
 
   const handleShowInstructions = () => {
     setShowInstructions(true);
@@ -27,6 +28,10 @@ function App() {
 
   const handleCloseInstructions = () => {
     setShowInstructions(false);
+  };
+
+  const handleToggleZoom = () => {
+    setIsZoomed(!isZoomed);
   };
 
   return (
@@ -70,6 +75,7 @@ function App() {
               boardSize={boardSize}
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
+              isZoomed={isZoomed}
             />
             
             <Controls
@@ -79,6 +85,8 @@ function App() {
               onPause={pauseGame}
               onReset={resetGame}
               onShowInstructions={handleShowInstructions}
+              isZoomed={isZoomed}
+              onToggleZoom={handleToggleZoom}
             />
           </div>
 

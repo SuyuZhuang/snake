@@ -6,19 +6,22 @@ interface GameBoardProps {
   boardSize: number;
   onTouchStart: (e: React.TouchEvent) => void;
   onTouchEnd: (e: React.TouchEvent) => void;
+  isZoomed: boolean;
 }
 
 const GameBoard: React.FC<GameBoardProps> = ({
   gameState,
   boardSize,
   onTouchStart,
-  onTouchEnd
+  onTouchEnd,
+  isZoomed
 }) => {
-  const cellSize = 20;
+  const baseCellSize = 20;
+  const cellSize = isZoomed ? baseCellSize * 1.5 : baseCellSize;
   const boardPixelSize = boardSize * cellSize;
 
   return (
-    <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 rounded-lg shadow-2xl border-4 border-yellow-600">
+    <div className={`relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 rounded-lg shadow-2xl border-4 border-yellow-600 transition-all duration-200 ${isZoomed ? 'scale-125' : ''}`}>
       <svg
         width={boardPixelSize}
         height={boardPixelSize}
@@ -62,10 +65,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
               y={segment.position.y * cellSize + cellSize / 2}
               textAnchor="middle"
               dominantBaseline="middle"
-              fontSize="8"
+              fontSize={isZoomed ? "16" : "8"}
               fill="white"
               fontWeight="bold"
-              className="select-none"
+              className="select-none drop-shadow-md"
             >
               {segment.trigram}
             </text>
@@ -87,10 +90,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
               y={symbol.position.y * cellSize + cellSize / 2}
               textAnchor="middle"
               dominantBaseline="middle"
-              fontSize="12"
+              fontSize={isZoomed ? "20" : "12"}
               fill="white"
               fontWeight="bold"
-              className="select-none"
+              className="select-none drop-shadow-md"
             >
               {symbol.symbol}
             </text>
