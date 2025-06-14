@@ -44,6 +44,7 @@ export const useGameLogic = () => {
       usedTrigrams.add(trigram.name);
       
       initialSnake.push({
+        // 依次向左排列
         position: { x: 10 - i, y: 10 }, 
         trigram: trigram.name
       });
@@ -76,13 +77,6 @@ export const useGameLogic = () => {
   const [masteredTrigrams, setMasteredTrigrams] = useState<Set<string>>(new Set());
   const touchStartRef = useRef<TouchStart | null>(null);
 
-  // Memoize generateRandomPosition for use in callbacks
-  const generateRandomPositionMemo = useCallback((): Position => {
-    return generateRandomPosition(
-      gameState.snake,
-      gameState.symbols.map(s => s.position)
-    );
-  }, [gameState.snake, gameState.symbols]);
 
   const checkCollision = useCallback((head: Position, snake: SnakeSegment[]): boolean => {
     // Wall collision
@@ -160,8 +154,15 @@ export const useGameLogic = () => {
           symbols: newSymbols
         };
       } else {
-        // 没吃到食物，长度不变
-        newSnake = [newHeadSegment, ...prev.snake.slice(0, -1)];
+        // 没吃到食物，长度不变，身体元素不变，位置更新
+        const newSnake = prev.snake.map(segment => ({
+          ...segment,
+          position: {
+            x: segment.position.x + 1,
+            y: segment.position.y
+          }
+        }));
+        
         return {
           ...prev,
           snake: newSnake
