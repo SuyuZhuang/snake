@@ -121,7 +121,12 @@ export const useGameLogic = () => {
       const matchedSymbolIndex = prev.symbols.findIndex(symbol => 
         newHeadSegment.position.x === symbol.position.x && newHeadSegment.position.y === symbol.position.y
       );
+      
+      // 吃到了食物，头部元素变成之前的第二个元素，身体变长
       if (matchedSymbolIndex !== -1) {
+        console.log('prev.snake[0].trigram', prev.snake[0].trigram);
+        console.log('prev.symbols', prev.symbols);
+        console.log('matchedSymbolIndex', matchedSymbolIndex);
         const matchedSymbol = prev.symbols[matchedSymbolIndex];
         const isCorrect = findTrigramByName(prev.snake[0].trigram)?.symbol === matchedSymbol.symbol;
         let newScore = prev.score;
@@ -129,13 +134,25 @@ export const useGameLogic = () => {
           newScore += 3;
           setStreak(s => s + 1);
           setMasteredTrigrams(m => new Set(m).add(prev.snake[0].trigram));
-          // 吃对了，变长
-          newSnake = [newHeadSegment, ...prev.snake];
+          // 吃对了，头部元素变成之前的第二个元素，以此类推, 身体也随机新增变长一个元素到尾部
+          newSnake = [
+            { position: newHead, trigram: prev.snake[1].trigram },
+            ...prev.snake.slice(0, -1).map((segment, index) => ({
+              ...segment,
+              trigram: prev.snake[index + 2]?.trigram || segment.trigram
+            })),
+            { position: prev.snake[prev.snake.length - 1].position, trigram: getRandomTrigram().name }
+          ];
         } else {
           newScore -= 3;
           setStreak(0);
           // 吃错了，长度不变
-          newSnake = [newHeadSegment, ...prev.snake.slice(0, -1)];
+          newSnake = newSnake = prev.snake.map((segment, index) => {
+            if (index === 0) {
+              return { ...segment, position: newHead };
+            }
+            return { ...segment, position: prev.snake[index - 1].position };
+          });
         }
         // 替换被吃掉的symbol
         const newSymbols = [...prev.symbols];
@@ -143,8 +160,18 @@ export const useGameLogic = () => {
           newSnake,
           newSymbols.map(s => s.position)
         );
+        
+        // 确保至少有一个食物与蛇头匹配
+        const headTrigram = findTrigramByName(newSnake[0].trigram);
+        const shouldMatchHead = !newSymbols.some(symbol => 
+          findTrigramByName(symbol.name)?.symbol === headTrigram?.symbol
+        );
+        
         newSymbols[matchedSymbolIndex] = {
-          ...getRandomTrigram(),
+          ...(shouldMatchHead ? 
+            findTrigramByName(newSnake[0].trigram)! : 
+            getRandomTrigram()
+          ),
           position: pos
         };
         return {
@@ -155,13 +182,12 @@ export const useGameLogic = () => {
         };
       } else {
         // 没吃到食物，长度不变，身体元素不变，位置更新
-        const newSnake = prev.snake.map(segment => ({
-          ...segment,
-          position: {
-            x: segment.position.x + 1,
-            y: segment.position.y
+        const newSnake = prev.snake.map((segment, index) => {
+          if (index === 0) {
+            return { ...segment, position: newHead };
           }
-        }));
+          return { ...segment, position: prev.snake[index - 1].position };
+        });
         
         return {
           ...prev,
