@@ -42,13 +42,13 @@ const Controls: React.FC<ControlsProps> = ({
         </button>
       ) : null} */}
       
-      {/* <button
+      <button
         onClick={onReset}
         className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors shadow-lg"
       >
         <RotateCcw size={20} />
         重置 · Reset
-      </button> */}
+      </button>
       
       <button
         onClick={onShowInstructions}
